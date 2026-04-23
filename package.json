@@ -8,7 +8,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index 'mongodb+srv://riller20:riller@cluster0.pucbwu5.mongodb.net/?appName=Cluster0'"
+    "start": "node index.js"
   },
   "dependencies": {
     "cors": "^2.8.6",

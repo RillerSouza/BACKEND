@@ -16,8 +16,7 @@ console.log(`Server Started at ${PORT}`)
 })
 const routes = require('./routes/routes');
 app.use('/api', routes);
-var userArgs = process.argv.slice(2);
-var mongoURL = userArgs[0];
+const mongoURL = process.env.MONGO_URL;
 var mongoose = require('mongoose');
 mongoose.connect(mongoURL);
 mongoose.Promise = global.Promise;
