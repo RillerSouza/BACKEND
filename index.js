@@ -7,7 +7,7 @@ app.use(cors());
 app.use(express.json());
 
 // ===== IMPORTANDO SEU MODEL =====
-const Tarefa = require('./models/Tarefa');
+const Tarefa = require('./models/tarefa');
 
 // ===== ROTA PRINCIPAL (RETORNA DADOS DO MONGO) =====
 app.get("/", async (req, res) => {
