@@ -1,45 +1,57 @@
-const express = require('express');
-const mongoose = require('mongoose');
+const express = require("express");
+const mongoose = require("mongoose");
 
 const app = express();
 
-// CORS
+// ===== MIDDLEWARE =====
+app.use(express.json());
+
+// CORS (simples)
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader('Access-Control-Allow-Methods', 'HEAD, GET, POST, PATCH, DELETE');
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
   res.setHeader(
     "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
+    "Content-Type, Authorization"
   );
   next();
 });
 
-app.use(express.json());
+// ===== MODEL (AJUSTE PARA O SEU) =====
+const User = require("./models/User"); // <-- IMPORTANTE
 
-// ROTA TESTE
-app.get("/", (req, res) => {
-  res.send("Backend funcionando 🚀");
+// ===== ROTA PRINCIPAL (RETORNA JSON DO BANCO) =====
+app.get("/", async (req, res) => {
+  try {
+    const dados = await User.find(); // busca tudo no Mongo
+    res.json(dados);
+  } catch (err) {
+    res.status(500).json({ erro: err.message });
+  }
 });
 
-// ROTAS
-const routes = require('./routes/routes');
-app.use('/api', routes);
+// ===== ROTAS ADICIONAIS =====
+const routes = require("./routes/routes");
+app.use("/api", routes);
 
-// PORTA (Render)
+// ===== CONFIG =====
 const PORT = process.env.PORT || 3000;
-
-// MONGO (Render)
 const mongoURL = process.env.MONGO_URL;
 
+// ===== CONEXÃO + START SERVER =====
 if (!mongoURL) {
   console.log("❌ MONGO_URL não definida");
 } else {
-  mongoose.connect(mongoURL)
-    .then(() => console.log("✅ Database Connected"))
-    .catch((err) => console.log("❌ Erro Mongo:", err));
-}
+  mongoose
+    .connect(mongoURL)
+    .then(() => {
+      console.log("✅ Database Connected");
 
-// START SERVER (IMPORTANTE)
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`🚀 Server Started at ${PORT}`);
-});
+      app.listen(PORT, "0.0.0.0", () => {
+        console.log(`🚀 Server rodando na porta ${PORT}`);
+      });
+    })
+    .catch((err) => {
+      console.log("❌ Erro ao conectar no Mongo:", err);
+    });
+}
