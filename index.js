@@ -6,10 +6,9 @@ const cors = require('cors');
 app.use(cors());
 app.use(express.json());
 
-// ===== IMPORTANDO SEU MODEL =====
 const Tarefa = require('./models/tarefa');
 
-// ===== ROTA PRINCIPAL (RETORNA DADOS DO MONGO) =====
+// rota teste
 app.get("/", async (req, res) => {
   try {
     const tarefas = await Tarefa.find();
@@ -19,21 +18,26 @@ app.get("/", async (req, res) => {
   }
 });
 
-// ===== ROTAS EXISTENTES =====
-const routes = require('./routes/routes');
-app.use('/api', routes);
-
-// ===== CONFIG =====
 const PORT = process.env.PORT || 3000;
 const mongoURL = process.env.MONGO_URL;
 
-// ===== CONEXÃO + START =====
+// valida se existe
+if (!mongoURL) {
+  console.error("❌ MONGO_URL não definida");
+  process.exit(1);
+}
+
+// conexão com log detalhado
 mongoose.connect(mongoURL)
 .then(() => {
-  console.log("✅ Database Connected");
+  console.log("✅ Mongo conectado");
 
   app.listen(PORT, "0.0.0.0", () => {
-    console.log(`🚀 Server Started at ${PORT}`);
+    console.log(`🚀 Server rodando na porta ${PORT}`);
   });
 })
-.catch(err => console.log("❌ Erro Mongo:", err));
+.catch(err => {
+  console.error("❌ ERRO AO CONECTAR NO MONGO:");
+  console.error(err);
+  process.exit(1);
+});
