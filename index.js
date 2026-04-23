@@ -2,11 +2,16 @@ const express = require('express');
 const app = express();
 app.use((req, res, next) => {
 res.setHeader("Access-Control-Allow-Origin", "*");
-res.setHeader('Access-Control-Allow-Methods', 'HEAD, GET, POST, PATCH,DELETE');
+res.setHeader('Access-Control-Allow-Methods', 'HEAD, GET, POST, PATCH,DELETE, OPTIONS');
 res.header(
 "Access-Control-Allow-Headers",
 "Origin, X-Requested-With, Content-Type, Accept"
 );
+
+if (req.method === 'OPTIONS'){
+    return res.sendStatus(200);
+}
+
 next();
 });
 app.use(express.json());
@@ -16,7 +21,8 @@ console.log(`Server Started at ${PORT}`)
 })
 const routes = require('./routes/routes');
 app.use('/api', routes);
-const mongoURL = process.env.MONGO_URL;
+var userArgs = process.argv.slice(2);
+var mongoURL = userArgs[0];
 var mongoose = require('mongoose');
 mongoose.connect(mongoURL);
 mongoose.Promise = global.Promise;
